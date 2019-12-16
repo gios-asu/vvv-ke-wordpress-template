@@ -3,7 +3,7 @@
 
 set -eo pipefail
 
-echo " * Custom site template provisioner - downloads and installs a copy of WP stable for testing, building client sites, etc"
+echo " * KE Web Services custom site template provisioner - downloads and installs a copy of WP stable for testing and developing ASU Web Standards multisites."
 
 # fetch the first host as the primary domain. If none is available, generate a default using the site name
 DOMAIN=$(get_primary_host "${VVV_SITE_NAME}".test)
@@ -168,6 +168,20 @@ WP_THEMES=$(get_config_value 'install_themes' '')
 if [ ! -z "${WP_THEMES}" ]; then
     for theme in ${WP_THEMES//- /$'\n'}; do
         noroot wp theme install "${theme}"
+    done
+fi
+
+CLONE_WP_PLUGINS=$(get_config_value 'clone_plugins' '')
+if [ ! -z "${CLONE_WP_PLUGINS}" ]; then
+  for plugin in ${CLONE_WP_PLUGINS//- /$'\n'}; do
+      git clone "${plugin}" "${VVV_PATH_TO_SITE}/public_html/wp-content/plugins"
+  done
+fi
+
+CLONE_WP_THEMES=$(get_config_value 'clone_themes' '')
+if [ ! -z "${CLONE_WP_THEMES}" ]; then
+    for theme in ${CLONE_WP_THEMES//- /$'\n'}; do
+        git clone "${theme}" "${VVV_PATH_TO_SITE}/public_html/wp-content/themes"
     done
 fi
 
